@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD MAPPER 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boarding.mapper.BoardingMapper">
+	<select id="selectBoardList" resultType="boarding.dto.BoardingDto">
+		<![CDATA[
+		 Select board_idx, title, hit_cnt
+		 , Date_Format(created_datetime, '%Y.%m.%d %H:%i:%s') As created_datetime
+		 From t_board 
+		 Where deleted_yn='N'
+		 Order by board_idx Desc
+		]]>
+	</select>
+	
+	<insert id="insertBoard" parameterType="boarding.dto.BoardingDto" useGeneratedKeys = "true" keyProperty ="boardIdx">
+
+<![CDATA[
+
+Insert Into t_Board(
+
+title, contents, created_datetime, creator_id
+
+) values (
+
+#{title}, #{contents}, Now(), 'admin'
+
+)
+
+]]> 
+
+</insert>
+
+
+<insert id="insertBoardFileList" parameterType="boarding.dto.BoardingFileDto">
+
+<![CDATA[
+
+Insert Into t_File(
+
+board_idx, original_file_name, stored_file_path, file_size, creator_id, created_datetime
+
+) 
+
+Values 
+
+]]>
+
+<foreach collection="list" item="item" separator=",">
+
+(
+
+#{item.boardIdx}, 
+
+#{item.originalFileName},
+
+#{item.storedFilePath},
+
+#{item.fileSize},
+
+'admin',Now()
+
+) 
+
+</foreach>
+
+</insert>
+	
+	<update id="updateBoard"  parameterType="boarding.dto.BoardingDto">
+		<![CDATA[						
+			Update t_Board set 
+				title = #{title}
+				, contents = #{contents}
+				, updated_datetime = now()
+				, updater_id = 'admin'
+			Where board_idx = #{boardIdx}
+		]]>
+	</update>
+	
+	<delete id="deleteBoard"  parameterType ="int">
+		<![CDATA[
+			Update t_Board set 
+				deleted_yn = 'y'
+				, updated_datetime = now()
+				, updater_id = 'admin'
+			Where board_idx = #{boardIdx}
+		]]>
+	</delete>
+	
+	<select id="selectBoardDetail"  parameterType = "int" resultType="boarding.dto.BoardingDto">
+		<![CDATA[
+		 Select board_idx, title, hit_cnt
+		 , Date_Format(created_datetime, '%Y.%m.%d %H:%i:%s') As created_datetime
+		 , creator_id,contents
+		 From t_board 
+		 Where deleted_yn='N' And board_idx = #{boardIdx}
+		 Order by board_idx Desc
+		]]>
+	</select>
+	
+	<update id="updateHitCount" parameterType ="int">
+		<![CDATA[
+			Update t_Board Set hit_Cnt = hit_cnt + 1 Where board_idx = #{boardIdx}
+		]]>
+	</update>
+	
+	<select id="selectBoardFileList" parameterType = "int" resultType ="boarding.dto.BoardingFileDto">
+
+		<![CDATA[
+		
+		Select 
+		
+		idx, board_idx, original_file_name,
+		
+		Format(Round(file_size/1024),0) As file_Size
+		
+		From t_file 
+		
+		Where board_idx = #{boardIdx}
+		
+		and deleted_yn = 'N'
+		
+		]]>
+
+</select>
+
+<select id="selectBoardFileInformation" parameterType="map" resultType="boarding.dto.BoardingFileDto">
+
+<![CDATA[
+
+Select original_file_name, stored_file_path, file_size
+
+From t_file 
+
+Where idx = #{idx}
+
+ And board_idx = #{boardIdx}
+
+ And deleted_yn='N'
+
+]]>
+
+</select>
+	
+</mapper>
