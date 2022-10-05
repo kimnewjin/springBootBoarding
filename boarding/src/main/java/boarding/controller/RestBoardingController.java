@@ -27,7 +27,7 @@ public class RestBoardingController {
 	@Autowired
 	private BoardingService boardService;
 	
-	@RequestMapping(value="/board", method=RequestMethod.GET)
+	@RequestMapping(value="/board", method=RequestMethod.GET)//주소와 요청방법을 꼭 지정해야한다.
 	public ModelAndView openBoardList() throws Exception{
 		ModelAndView mv = new ModelAndView("/board/restBoardList");
 		List<BoardingDto> list = boardService.selectBoardList();
