@@ -28,6 +28,8 @@ public class RestBoardingController {
 	private BoardingService boardService;
 	
 	@RequestMapping(value="/board", method=RequestMethod.GET)//주소와 요청방법을 꼭 지정해야한다.
+	//value속성으로 주소를 지정하고, method 속성으로 요청방식을 정의한다.
+	//GET - @GetMapping / POST - @PostMapping, / PUT - @PutMapping / DELETE - @DeleteMapping
 	public ModelAndView openBoardList() throws Exception{
 		ModelAndView mv = new ModelAndView("/board/restBoardList");
 		List<BoardingDto> list = boardService.selectBoardList();
